@@ -1,6 +1,7 @@
 Actividades pendientes:
 
-**Etapa de descarga**
+**Etapa de descarga** 
+
 Obtención de las fehcas de pronóstico de CFS y guardado en algún archivo
 para su posterior lectura
 
