@@ -10,7 +10,15 @@
 #libraries needed
 import urllib.request
 from bs4 import BeautifulSoup
-
+import netCDF4
+import numpy as np
+import argparse 
+import datetime
+import math
+import matplotlib.pyplot as plt
+import mpl_toolkits.basemap as bm
+from numpy import ma  #mask smaller values       
+        
 def clean():   #clean enviroment
     import os
     os.system("rm -f /tmp/*.gz /tmp/*.nc")
@@ -35,44 +43,9 @@ def descarga_nc( mesi, diai, mesf, diaf, aniof, variable_entrada, variable_salid
         #get nc file save as netcdf
         ruta = "./tmp/"
         urllib.request.urlretrieve('http://www.esrl.noaa.gov'+"".join(link), ruta+variable_salida+'.nc')
-    
-#begin        
-
-clean()
-
-#initial date
-iniy = 2017
-inim = 3
-inid = 28
-
-#final date
-finy = 2017
-finm = 4
-find = 13
-
-#download: geopotential height, u and v climatology for the selected period
-#          geopotential height anomalies
-
-variables = ['Zonal+Wind','Meridional+Wind','Geopotential+Height']
-
-out_var = ['zonalw_climo','meridw_climo','hgt_climo','hgt']
-
-for i in range(0,3):
-    if i==2: # download climo and anomaly for geopotential
-        descarga_nc(inim,inid,finm,find,finy,variables[i],out_var[i],3)
-        descarga_nc(inim,inid,finm,find,finy,variables[i],out_var[i+1],2)
-    descarga_nc(inim,inid,finm,find,finy,variables[i],out_var[i],3)
-
-
-
-
-# In[10]:
-
-# manipulation of netCDF files
-import netCDF4
-import numpy as np
 
 def manipular_nc(archivo,variable):
+
     dataset = netCDF4.Dataset(archivo, 'r')
     var_out = dataset.variables[variable][:]
     lon = dataset.variables['lon'][:]
@@ -80,36 +53,8 @@ def manipular_nc(archivo,variable):
     dataset.close()
     return var_out, lon, lat
 
-#begin
-
-ruta = "./tmp/"
-
-out_var = ['zonalw_climo','meridw_climo','hgt_climo','hgt']
-
-nc_var = ['uwnd','vwnd','hgt']
-
-[uclm,lon,lat] = manipular_nc(ruta+out_var[0]+'.nc',nc_var[0])
-
-[vclm,lon,lat] = manipular_nc(ruta+out_var[1]+'.nc',nc_var[1])
-
-[zclm,lon,lat] = manipular_nc(ruta+out_var[2]+'.nc',nc_var[2])
-
-[zaa,lon,lat] = manipular_nc(ruta+out_var[3]+'.nc',nc_var[2])  #zaa [1 nlat nlon]
-
-#restringe domain to latitudes south to 0 (to avoid problems with sin (0°))
-index_lat = np.where(lat<0)
-zaa = zaa[0,index_lat,:]
-lat = lat[index_lat]
-uclm = uclm[0,index_lat,:]
-vclm = vclm[0,index_lat,:]
-
-
-# In[11]:
-
 #computation of plum fluxes. Script adapted from Kazuaki Nishii and Hisashi Nakamura
-import math
-import numpy as np
-
+        
 def c_diff(arr, h, dim, cyclic = False):  #compute derivate of array variable respect to h associated to dim
     #adapted from kuchaale script
     ndim = arr.ndim
@@ -138,139 +83,221 @@ def c_diff(arr, h, dim, cyclic = False):  #compute derivate of array variable re
     d_arr = np.transpose(d_arr, tuple(rank))
 
     return d_arr
+        
+        
+def main():
+  
+	# Define parser data
+    parser = argparse.ArgumentParser(description='Plotting WAF for given dates')
+    # First arguments. Initial Date Format yyyy-mm-dd
+    parser.add_argument('--dateinit',dest='date_init', metavar='Date', type=str,
+                        nargs=1,help='Initial date in "YYYY-MM-DD"')    
+    #Second argument: Final Date Format yyyy-mm-dd
+    parser.add_argument('--dateend',dest='date_end', metavar='Date', type=str,
+                        nargs=1,help='Final date in "YYYY-MM-DD"')
+    # Specify models to exclude from command line
+    #parser.add_argument('--no-cfs', dest='cfs_bool', action="store_true", default= False, help="Don't display CFS V2 information")
+    
+    # Extract dates from args
+    args=parser.parse_args()
 
-#begin
-
-[xxx,nlats,nlons] = zaa.shape #get dimensions
-
-#gas constant
-Ra = 290
-
-#earth radius
-a = 6400000
-
-coslat = np.cos(lat*3.14/180)
-sinlat = np.sin(lat*3.14/180)
-
-#Coriolis parameter
-f = 2*7.24/100000*sinlat
-f0 = 2*7.24/100000*math.sin(43*3.14/180)
-
-#gravity
-g = 9.8
-
-# unit [Pa]
-lev = 20000
-
-# basic state (climatology): uclm vclm zclm
-
-# anomalies zaa
-
-# QG stream function
-psiaa = g/np.transpose(np.tile(f,(nlons,1)))*zaa
-
-# magnitude of basic state wind speed
-magU = np.sqrt(np.add(np.power(uclm,2),np.power(vclm,2)))
-
-#psi derivatives
-dpsidlon = c_diff(psiaa,lon,2)
-ddpsidlonlon = c_diff(dpsidlon,lon,2)
-
-dpsidlat = c_diff(psiaa,lat,1)
-ddpsidlatlat = c_diff(dpsidlat,lat,1)
-ddpsidlatlon = c_diff(dpsidlat,lon,2)
-
-termxu = dpsidlon*dpsidlon-psiaa*ddpsidlonlon
-
-termxv = dpsidlon*dpsidlat-ddpsidlatlon*psiaa
-
-termyv = dpsidlat*dpsidlat-psiaa*ddpsidlatlat
-
-# "p" is normalized by 1000hPa
-coeff1=np.transpose(np.tile(coslat,(nlons,1)))*(lev/100000)/(2*magU)
-#x-component
-
-px = coeff1/(a*a*np.transpose(np.tile(coslat,(nlons,1))))*( uclm*termxu/np.transpose(np.tile(coslat,(nlons,1))) + vclm*termxv)
-
-#y-component
-
-py = coeff1/(a*a)*( uclm/np.transpose(np.tile(coslat,(nlons,1)))*termxv + vclm*termyv)
+    initialDate = datetime.datetime.strptime(args.date_init[0], '%Y-%m-%d')
+    finalDate = datetime.datetime.strptime(args.date_end[0], '%Y-%m-%d')
+    
+    clean()
 
 
-# In[12]:
+    #initial date
+    iniy = initialDate.year
+    inim = initialDate.month
+    inid = initialDate.day
+    
+    #final date
+    finy = finalDate.year
+    finm = finalDate.month
+    find = finalDate.day
+    
+    #download: geopotential height, u and v climatology for the selected period
+    #          geopotential height anomalies
+    
+    variables = ['Zonal+Wind','Meridional+Wind','Geopotential+Height']
+    
+    out_var = ['zonalw_climo','meridw_climo','hgt_climo','hgt']
+    
+    for i in range(0,3):
+        if i==2: # download climo and anomaly for geopotential
+            descarga_nc(inim,inid,finm,find,finy,variables[i],out_var[i],3)
+            descarga_nc(inim,inid,finm,find,finy,variables[i],out_var[i+1],2)
+        descarga_nc(inim,inid,finm,find,finy,variables[i],out_var[i],3)
+                   
+    
+    # manipulation of netCDF files
+   
+    
+    #begin
+    
+    ruta = "./tmp/"
+    
+    out_var = ['zonalw_climo','meridw_climo','hgt_climo','hgt']
+    
+    nc_var = ['uwnd','vwnd','hgt']
+    
+    [uclm,lon,lat] = manipular_nc(ruta+out_var[0]+'.nc',nc_var[0])
+    
+    [vclm,lon,lat] = manipular_nc(ruta+out_var[1]+'.nc',nc_var[1])
+    
+    [zclm,lon,lat] = manipular_nc(ruta+out_var[2]+'.nc',nc_var[2])
+    
+    [zaa,lon,lat] = manipular_nc(ruta+out_var[3]+'.nc',nc_var[2])  #zaa [1 nlat nlon]
+    
+    #restringe domain to latitudes south to 0 (to avoid problems with sin (0°))
+    index_lat = np.where(lat<0)
+    zaa = zaa[0,index_lat,:]
+    lat = lat[index_lat]
+    uclm = uclm[0,index_lat,:]
+    vclm = vclm[0,index_lat,:]
+    
+    
+    # In[11]:
+           
+    #begin
+    
+    [xxx,nlats,nlons] = zaa.shape #get dimensions
+    
+    #gas constant
+    Ra = 290
+    
+    #earth radius
+    a = 6400000
+    
+    coslat = np.cos(lat*3.14/180)
+    sinlat = np.sin(lat*3.14/180)
+    
+    #Coriolis parameter
+    f = 2*7.24/100000*sinlat
+    f0 = 2*7.24/100000*math.sin(43*3.14/180)
+    
+    #gravity
+    g = 9.8
+    
+    # unit [Pa]
+    lev = 20000
+    
+    # basic state (climatology): uclm vclm zclm
+    
+    # anomalies zaa
+    
+    # QG stream function
+    psiaa = g/np.transpose(np.tile(f,(nlons,1)))*zaa
+    
+    # magnitude of basic state wind speed
+    magU = np.sqrt(np.add(np.power(uclm,2),np.power(vclm,2)))
+    
+    #psi derivatives
+    dpsidlon = c_diff(psiaa,lon,2)
+    ddpsidlonlon = c_diff(dpsidlon,lon,2)
+    
+    dpsidlat = c_diff(psiaa,lat,1)
+    ddpsidlatlat = c_diff(dpsidlat,lat,1)
+    ddpsidlatlon = c_diff(dpsidlat,lon,2)
+    
+    termxu = dpsidlon*dpsidlon-psiaa*ddpsidlonlon
+    
+    termxv = dpsidlon*dpsidlat-ddpsidlatlon*psiaa
+    
+    termyv = dpsidlat*dpsidlat-psiaa*ddpsidlatlat
+    
+    # "p" is normalized by 1000hPa
+    coeff1=np.transpose(np.tile(coslat,(nlons,1)))*(lev/100000)/(2*magU)
+    #x-component
+    
+    px = coeff1/(a*a*np.transpose(np.tile(coslat,(nlons,1))))*( uclm*termxu/np.transpose(np.tile(coslat,(nlons,1))) + vclm*termxv)
+    
+    #y-component
+    
+    py = coeff1/(a*a)*( uclm/np.transpose(np.tile(coslat,(nlons,1)))*termxv + vclm*termyv)
+    
+    
+    # In[12]:
+    
+    #plot flux along with hgt anomalies
+    
+    
+    #get_ipython().magic('matplotlib inline')
+    
+    # create figure, add axes
+    fig1 = plt.figure(figsize=(16,20),dpi=300)  #fig size in inches
+    ax = fig1.add_axes([0.1,0.1,0.8,0.8])
+    
+    mapproj = bm.Basemap(projection='cyl',
+                         llcrnrlat=-88.0, llcrnrlon=0.0,
+                         urcrnrlat=-5.0, urcrnrlon=360.0)    #projection and map limits
+    #mapproj = bm.Basemap(projection='spstere',\
+    #            boundinglat=0,lon_0=120,resolution='l') 
+    
+    mapproj.drawcoastlines()          # coast
+    mapproj.drawparallels(np.array([-75, -60, -45, -30,-15]), labels=[1,0,0,0])    #draw parallels
+    mapproj.drawmeridians(np.array([-180, -90, 0, 90, 180]), labels=[0,0,0,1])     #draw meridians
+    
+    lonall, latall = np.meshgrid(lon, lat)          #array of grid
+    lonproj, latproj = mapproj(lonall, latall)      #poject grid
+    
+    # set desired contour levels.
+    clevs = np.arange(-150,180,30)          
+    
+    barra = plt.cm.RdBu_r #colorbar
+    
+    CS1 = mapproj.contourf(lonproj, latproj,zaa[0,:,:],clevs,cmap=barra,extend='both') #extended generate pretty colorbar
+    #color lower and upper colorbar triangles
+    barra.set_under(barra(0))
+    barra.set_over(barra(barra.N-1))
+    
+    # add colorbar
+    cb = mapproj.colorbar(CS1,"right")
+    cb.set_label('m')
+    
+    #contoour levels
+    mapproj.contour(lonproj, latproj,zaa[0,:,:],clevs,colors = 'k')
+    
+    #mask wind data
+    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < 0.001
+    
+    #mask array
+    px_mask = ma.array(px,mask = M)
+    py_mask = ma.array(py,mask = M)
+    
+    #apply mask: very inefficient way
+    px_mask[px_mask.mask] = np.nan
+    py_mask[py_mask.mask] = np.nan
+    
+    #print title
+    ax.set_title('Anomalias HGT 200hPa '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
+    #show image
+    #plt.show()
+    #save figure
+    fig1.savefig('hgt_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    #tight option adjuts paper size to figure
+    
+    #plot plumb fluxes and save again
+    
+    #plot vectors
+    Q = mapproj.quiver(lonproj[2:-1,:],latproj[2:-1,:],px_mask[0,2:-1,:],py_mask[0,2:-1,:],width=1.7e-3,
+                       headwidth=2,#headwidht (default3)
+                       headlength=2.5)  # (default5)
+    ax.set_title('Anomalias HGT 200hPa y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
+    #save figure
+    fig1.savefig('hgt_plumb_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    #tight option adjuts paper size to figure
 
-#plot flux along with hgt anomalies
 
-import matplotlib.pyplot as plt
-import mpl_toolkits.basemap as bm
-import numpy as np
-from numpy import ma  #mask smaller values
 
-#get_ipython().magic('matplotlib inline')
+    
 
-# create figure, add axes
-fig1 = plt.figure(figsize=(16,20),dpi=300)  #fig size in inches
-ax = fig1.add_axes([0.1,0.1,0.8,0.8])
+    
+#begin        
+if __name__ == "__main__":
+    main() 
 
-mapproj = bm.Basemap(projection='cyl',
-                     llcrnrlat=-88.0, llcrnrlon=0.0,
-                     urcrnrlat=-5.0, urcrnrlon=360.0)    #projection and map limits
-#mapproj = bm.Basemap(projection='spstere',\
-#            boundinglat=0,lon_0=120,resolution='l') 
-
-mapproj.drawcoastlines()          # coast
-mapproj.drawparallels(np.array([-75, -60, -45, -30,-15]), labels=[1,0,0,0])    #draw parallels
-mapproj.drawmeridians(np.array([-180, -90, 0, 90, 180]), labels=[0,0,0,1])     #draw meridians
-
-lonall, latall = np.meshgrid(lon, lat)          #array of grid
-lonproj, latproj = mapproj(lonall, latall)      #poject grid
-
-# set desired contour levels.
-clevs = np.arange(-150,180,30)          
-
-barra = plt.cm.RdBu_r #colorbar
-
-CS1 = mapproj.contourf(lonproj, latproj,zaa[0,:,:],clevs,cmap=barra,extend='both') #extended generate pretty colorbar
-#color lower and upper colorbar triangles
-barra.set_under(barra(0))
-barra.set_over(barra(barra.N-1))
-
-# add colorbar
-cb = mapproj.colorbar(CS1,"right")
-cb.set_label('m')
-
-#contoour levels
-mapproj.contour(lonproj, latproj,zaa[0,:,:],clevs,colors = 'k')
-
-#mask wind data
-M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < 0.001
-
-#mask array
-px_mask = ma.array(px,mask = M)
-py_mask = ma.array(py,mask = M)
-
-#apply mask: very inefficient way
-px_mask[px_mask.mask] = np.nan
-py_mask[py_mask.mask] = np.nan
-
-#print title
-ax.set_title('Anomalias HGT 200hPa '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
-#show image
-#plt.show()
-#save figure
-fig1.savefig('hgt_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
-#tight option adjuts paper size to figure
-
-#plot plumb fluxes and save again
-
-#plot vectors
-Q = mapproj.quiver(lonproj[2:-1,:],latproj[2:-1,:],px_mask[0,2:-1,:],py_mask[0,2:-1,:],width=1.7e-3,
-                   headwidth=2,#headwidht (default3)
-                   headlength=2.5)  # (default5)
-ax.set_title('Anomalias HGT 200hPa y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
-#save figure
-fig1.savefig('hgt_plumb_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
-#tight option adjuts paper size to figure
 
 
 # In[ ]:
