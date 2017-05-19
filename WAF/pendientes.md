@@ -1,4 +1,4 @@
 **Pendiente**
 
-Generar parseo para poder correr el codigo desde una consola
+Comentar mejor el codigo para que sea entendible por todos
 
