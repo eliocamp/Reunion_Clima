@@ -245,7 +245,7 @@ def main():
     # set desired contour levels.
     clevs = np.arange(-150,180,30)          
     
-    barra = plt.cm.RdBu_r #colorbar
+    barra = plt.cm.RdBu #colorbar
     
     CS1 = mapproj.contourf(lonproj, latproj,zaa[0,:,:],clevs,cmap=barra,extend='both') #extended generate pretty colorbar
     #color lower and upper colorbar triangles
