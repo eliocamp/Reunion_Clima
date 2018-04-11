@@ -9,6 +9,8 @@
 
 #cambios: uso de la funcion corriente en vez de hgt. nivel 0.21 sigma
 
+# As an example to run by shell: python Calculo_WAF.py --dateinit "2018-02-01" --dateend "2018-02-28"
+
 #libraries needed
 import urllib.request
 from bs4 import BeautifulSoup
@@ -210,7 +212,7 @@ def main():
     
     clevs = np.arange(-2.5e7,2.75e7,0.25e7)
     
-    barra = plt.cm.RdBu_r #colorbar
+    barra = plt.cm.RdBu #colorbar
     
     CS1 = mapproj.contourf(lonproj, latproj,psiaa[0,:,:],clevs,cmap=barra,extend='both') #extended generate pretty colorbar
     
@@ -220,20 +222,21 @@ def main():
     
     # add colorbar
     cb = mapproj.colorbar(CS1,"right")
-    cb.set_label('m2/s')
+    cb.set_label('$m^{2}/s$')
     
     #contoour levels
     mapproj.contour(lonproj, latproj,psiaa[0,:,:],clevs,colors = 'k',linewidths=0.5)
     
-    #mask wind data
-    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < 0.001
+    #mask wind data to only show the 25% stronger fluxes.
+    Q75=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),75) 
+    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q75
     
     #mask array
     px_mask = ma.array(px,mask = M)
     py_mask = ma.array(py,mask = M)
     
     #print title
-    ax.set_title('Anomalias Función Corriente 0.2101sigma '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
+    ax.set_title('Anomalías Función Corriente 0.2101 sigma '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure - tight option adjuts paper size to figure
     fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
@@ -242,11 +245,11 @@ def main():
     #plot plumb fluxes and save again
     
     #plot vectors
-    mapproj.quiver(lonproj[2:-1:2,2:-1:2],latproj[2:-1:2,2:-1:2],px_mask[0,2:-1:2,2:-1:2],py_mask[0,2:-1:2,2:-1:2],width=1.7e-3,
-                       headwidth=2,#headwidht (default3)
-                       headlength=2.5)  # (default5)
+    mapproj.quiver(lonproj[2:-1:2,2:-1:2],latproj[2:-1:2,2:-1:2],px_mask[0,2:-1:2,2:-1:2],py_mask[0,2:-1:2,2:-1:2],width=1e-3,
+                       headwidth=3,#headwidht (default3)
+                       headlength=2.2)  # (default5)
     
-    ax.set_title('Anomalias Función Corriente 0.2101sigma y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
+    ax.set_title('Anomalías Función Corriente 0.2101 sigma y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure
     fig1.savefig('psi_plumb_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
