@@ -1,8 +1,8 @@
-#This script takes a initial date and final date and downloads the files needed 
-#to compute the anomaly of the variable/level specified
+#This script takes a initial date and final date and downloads the files needed to compute the anomaly of the variable/level specified 
 #for that given period. NCEP/NCAR Reanalysis (Kalnay etal 1996)are used 
+#Plot is made in stereographic projection, including all longitudes and latitudes from South Pole to the one indicated.
 
-# As an example to run by shell: python Anom_var.py --dateinit "2018-02-01" --dateend "2018-02-28" --variable "Zg" --level "200mb" --latmin "-60" --latmax "-20" --lonmin "250" --lonmax "340" 
+# As an example to run by shell: python Anom_var_stereo.py --dateinit "2018-03-01" --dateend "2018-05-31" --variable "Zg" --level "500mb" --latr "-20" 
 
 #libraries needed
 import urllib.request
@@ -14,7 +14,8 @@ from matplotlib import pyplot as plt
 import cartopy.crs as ccrs	
 import numpy as np 
 import cartopy.feature 	
-from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+from cartopy.util import add_cyclic_point
+import matplotlib.path as mpath
 
 
 def clean():   #clean enviroment
@@ -64,17 +65,8 @@ def main():
     parser.add_argument('--level',dest='LEVEL', metavar='lev', type=str,
                         nargs=1,help='Level in hPa with units included (mb)')
     #Fifth argument: Minimum Latitude for the graph range
-    parser.add_argument('--latmin',dest='LATI', metavar='lati', type=str,
-                        nargs=1,help='Minimum latitude')
-    #Sixth argument: Maximum Latitude for the graph range
-    parser.add_argument('--latmax',dest='LATF', metavar='latf', type=str,
-                        nargs=1,help='Maximum latitude')
-    #Seventh argument: Minimum Longitude for the graph range
-    parser.add_argument('--lonmin',dest='LONI', metavar='loni', type=str,
-                        nargs=1,help='Minimum longitude')
-    #Eightht argument: Maximum Longitude for the graph range
-    parser.add_argument('--lonmax',dest='LONF', metavar='lonf', type=str,
-                        nargs=1,help='Maximum longitude')
+    parser.add_argument('--latr',dest='LATR', metavar='latr', type=str,
+                        nargs=1,help='Latitude to make the graph')
 
     # Extract dates from args
     args=parser.parse_args()
@@ -84,10 +76,7 @@ def main():
 
     var=args.VAR[0]
     level=args.LEVEL[0]
-    lati=args.LATI[0]
-    latf=args.LATF[0]
-    loni=args.LONI[0]
-    lonf=args.LONF[0]
+    latr=args.LATR[0]
  
     clean()
 
@@ -121,27 +110,32 @@ def main():
     [anomvar,lat,lon] = manipular_nc(ruta+var+'.nc',var)
 
     fig = plt.figure(figsize=(16, 11)) 
-    
-    ax = plt.subplot(projection=ccrs.PlateCarree(central_longitude=180))
+        
+    ax = plt.subplot(projection=ccrs.SouthPolarStereo(central_longitude=300))
 
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
-    lons, lats = np.meshgrid(lon,lat)
+    lons, lats = np.meshgrid(np.append(lon,360),lat)
 
     crs_latlon = ccrs.PlateCarree()
-    ax.set_extent([int(loni),int(lonf), int(lati), int(latf)], crs=crs_latlon)
-    im=ax.contourf(lons, lats, np.squeeze(anomvar),cmap='RdBu')
+    ax.set_extent([0,359.9, -90, int(latr)], crs=crs_latlon)
+    # Compute a circle in axes coordinates, which we can use as a boundary
+    # for the map. We can pan/zoom as much as we like - the boundary will be
+    # permanently circular.
+    theta = np.linspace(0, 2*np.pi, 100)
+    center, radius = [0.5, 0.5], 0.5
+    verts = np.vstack([np.sin(theta), np.cos(theta)]).T
+    circle = mpath.Path(verts * radius + center)
+
+    ax.set_boundary(circle, transform=ax.transAxes)
+    im=ax.contourf(lons, lats, add_cyclic_point(np.squeeze(anomvar)),transform=crs_latlon,cmap='RdBu_r')
+    ax.contour(lons, lats, add_cyclic_point(np.squeeze(anomvar)),colors='k',transform=crs_latlon)    
     plt.colorbar(im,fraction=0.052, pad=0.04,shrink=0.8,aspect=12)
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.5)
     ax.gridlines(crs=crs_latlon, linewidth=0.3, linestyle='-')
-    lon_formatter = LongitudeFormatter(zero_direction_label=True)
-    lat_formatter = LatitudeFormatter()
-    ax.xaxis.set_major_formatter(lon_formatter)
-    ax.yaxis.set_major_formatter(lat_formatter)
     ax.set_title('Anomalías '+var+' '+level+' '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     #Save in jpg
-
-    plt.savefig('Anom'+var+'_'+level+'_'+str(inid)+str(inim)+str(iniy)+'_'+str(find)+str(finm)+str(finy)+'_'+str(lati)+'_'+str(latf)+'_'+str(loni)+'_'+str(lonf)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    plt.savefig('Anom'+var+'_'+level+'_'+str(inid)+str(inim)+str(iniy)+'_'+str(find)+str(finm)+str(finy)+'_'+str(latr)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
 
 #begin        
 if __name__ == "__main__":
