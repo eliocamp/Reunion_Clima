@@ -136,13 +136,8 @@ def main():
     limite = np.max([np.abs(minimo),np.abs(maximo)])
     clevels = np.arange(-limite,(limite+limite*2/10),limite*2/10)
     ax.set_boundary(circle, transform=ax.transAxes)
-<<<<<<< HEAD
     im=ax.contourf(lons, lats, add_cyclic_point(np.squeeze(anomvar)),clevs,transform=crs_latlon,cmap='RdBu_r',extend='both')
-    ax.contour(lons, lats, add_cyclic_point(np.squeeze(anomvar)),clevs,colors='k',transform=crs_latlon,extend='both')    
-=======
-    im=ax.contourf(lons, lats, add_cyclic_point(np.squeeze(anomvar)), clevels, transform=crs_latlon,cmap='RdBu_r')
-    ax.contour(lons, lats, add_cyclic_point(np.squeeze(anomvar)),colors='k',transform=crs_latlon)    
->>>>>>> d71519aa4faab7b07e8710f59fb1ee6167e1a21c
+    ax.contour(lons, lats, add_cyclic_point(np.squeeze(anomvar)),clevs,colors='k',transform=crs_latlon,extend='both')     
     plt.colorbar(im,fraction=0.052, pad=0.04,shrink=0.8,aspect=12)
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.5)
