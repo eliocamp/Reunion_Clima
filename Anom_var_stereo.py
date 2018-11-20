@@ -113,8 +113,14 @@ def main():
         
     ax = plt.subplot(projection=ccrs.SouthPolarStereo(central_longitude=300))
 
+
+
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
     lons, lats = np.meshgrid(np.append(lon,360),lat)
+    if (level=='500mb'):
+        clevs = np.arange(-135,165,30)      
+    elif (level=='30mb'):
+        clevs = np.arange(-225,275,50)        
 
     crs_latlon = ccrs.PlateCarree()
     ax.set_extent([0,359.9, -90, int(latr)], crs=crs_latlon)
@@ -127,15 +133,15 @@ def main():
     circle = mpath.Path(verts * radius + center)
 
     ax.set_boundary(circle, transform=ax.transAxes)
-    im=ax.contourf(lons, lats, add_cyclic_point(np.squeeze(anomvar)),transform=crs_latlon,cmap='RdBu_r')
-    ax.contour(lons, lats, add_cyclic_point(np.squeeze(anomvar)),colors='k',transform=crs_latlon)    
+    im=ax.contourf(lons, lats, add_cyclic_point(np.squeeze(anomvar)),clevs,transform=crs_latlon,cmap='RdBu_r',extend='both')
+    ax.contour(lons, lats, add_cyclic_point(np.squeeze(anomvar)),clevs,colors='k',transform=crs_latlon,extend='both')    
     plt.colorbar(im,fraction=0.052, pad=0.04,shrink=0.8,aspect=12)
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.5)
     ax.gridlines(crs=crs_latlon, linewidth=0.3, linestyle='-')
     ax.set_title('Anomalías '+var+' '+level+' '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     #Save in jpg
-    plt.savefig('Anom'+var+'_'+level+'_'+str(inid)+str(inim)+str(iniy)+'_'+str(find)+str(finm)+str(finy)+'_'+str(latr)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    plt.savefig('Anom'+var+'_'+level+'_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'_'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'_'+str(latr)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
 
 #begin        
 if __name__ == "__main__":

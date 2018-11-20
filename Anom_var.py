@@ -122,14 +122,15 @@ def main():
 
     fig = plt.figure(figsize=(16, 11)) 
     
-    ax = plt.subplot(projection=ccrs.PlateCarree(central_longitude=180))
+    ax = plt.subplot(projection=ccrs.Robinson(central_longitude=180))
 
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
     lons, lats = np.meshgrid(lon,lat)
-
+    clevs = np.arange(-90,110,20)
     crs_latlon = ccrs.PlateCarree()
     ax.set_extent([int(loni),int(lonf), int(lati), int(latf)], crs=crs_latlon)
-    im=ax.contourf(lons, lats, np.squeeze(anomvar),cmap='RdBu')
+    im=ax.contourf(lons, lats, np.squeeze(anomvar),clevs,transform=crs_latlon,cmap='RdBu_r',extend='both')
+    ax.contour(lons, lats, np.squeeze(anomvar),clevs,colors='k',transform=crs_latlon)
     plt.colorbar(im,fraction=0.052, pad=0.04,shrink=0.8,aspect=12)
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.5)
