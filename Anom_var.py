@@ -142,7 +142,7 @@ def main():
     ax.set_title('Anomalías '+var+' '+level+' '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     #Save in jpg
 
-    plt.savefig('Anom'+var+'_'+level+'_'+str(inid)+str(inim)+str(iniy)+'_'+str(find)+str(finm)+str(finy)+'_'+str(lati)+'_'+str(latf)+'_'+str(loni)+'_'+str(lonf)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    plt.savefig('Anom'+var+'_'+level+'_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'_'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'_'+str(lati)+'_'+str(latf)+'_'+str(loni)+'_'+str(lonf)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
 
 #begin        
 if __name__ == "__main__":
