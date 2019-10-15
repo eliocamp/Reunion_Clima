@@ -134,7 +134,7 @@ def main():
 
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
     lons, lats = np.meshgrid(lon,lat)
-    clevs = np.arange(int(levcont),int(levcont)+int(levint),int(levint))
+    clevs = np.arange(-int(levcont),int(levcont)+int(levint),int(levint))
     crs_latlon = ccrs.PlateCarree()
     ax.set_extent([int(loni),int(lonf), int(lati), int(latf)], crs=crs_latlon)
     im=ax.contourf(lons, lats, np.squeeze(anomvar),clevs,transform=crs_latlon,cmap='RdBu_r',extend='both')

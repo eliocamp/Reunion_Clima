@@ -58,7 +58,7 @@ def main():
     #Second argument: Final Date Format yyyy-mm-dd
     parser.add_argument('--dateend',dest='date_end', metavar='Date', type=str,
                         nargs=1,help='Final date in "YYYY-MM-DD"')
-    #Thrid argument: Variable U (zonal wind), V (meridional wind) or Zg (geopotential height)
+    #Thrid argument: Variable U (zonal wind), V (meridional wind), Zg (geopotential height), T (air temperature)
     parser.add_argument('--variable',dest='VAR', metavar='var', type=str,
                         nargs=1,help='Variable Name U,V or Zg"')
     #Fourth argument: level of the variable in hPa or mb
@@ -109,6 +109,9 @@ def main():
     elif (var=='Zg'):
         var_desc='Geopotential+Height'        
         var='hgt'
+    elif (var=='T'):
+        var_desc='Air+Temperature'        
+        var='air'
     else:
         print('ERROR: Wrong Variable')
         
@@ -123,18 +126,7 @@ def main():
 
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
     lons, lats = np.meshgrid(np.append(lon,360),lat)
-    clevs = np.arange(int(levcont),int(levcont)+int(levint),int(levint))
-
-
-
-
-
-
-    if (level=='500mb'):
-        clevs = np.arange(-135,165,30)      
-    elif (level=='30mb'):
-        clevs = np.arange(-225,275,50)        
-
+    clevs = np.arange(-int(levcont),int(levcont)+int(levint),int(levint))
     crs_latlon = ccrs.PlateCarree()
     ax.set_extent([0,359.9, -90, int(latr)], crs=crs_latlon)
     # Compute a circle in axes coordinates, which we can use as a boundary
