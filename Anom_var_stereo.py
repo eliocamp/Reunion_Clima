@@ -2,7 +2,7 @@
 #for that given period. NCEP/NCAR Reanalysis (Kalnay etal 1996)are used 
 #Plot is made in stereographic projection, including all longitudes and latitudes from South Pole to the one indicated.
 
-# As an example to run by shell: python Anom_var_stereo.py --dateinit "2018-03-01" --dateend "2018-05-31" --variable "Zg" --level "500mb" --latr "-20" 
+# As an example to run by shell: python Anom_var_stereo.py --dateinit "2018-03-01" --dateend "2018-05-31" --variable "Zg" --level "500mb" --latr "-20" --levcont "200" --levint "20" 
 
 #libraries needed
 import urllib.request
@@ -67,6 +67,12 @@ def main():
     #Fifth argument: Minimum Latitude for the graph range
     parser.add_argument('--latr',dest='LATR', metavar='latr', type=str,
                         nargs=1,help='Latitude to make the graph')
+    #Sixth argument: Maximum level for contour
+    parser.add_argument('--levcont',dest='LEVCONT', metavar='levcont', type=str,
+                        nargs=1,help='Maximum level for contour')
+    #Seventh argument: Interval level for contour
+    parser.add_argument('--levint',dest='LEVINT', metavar='levint', type=str,
+                        nargs=1,help='Interval level for contour')
 
     # Extract dates from args
     args=parser.parse_args()
@@ -77,6 +83,8 @@ def main():
     var=args.VAR[0]
     level=args.LEVEL[0]
     latr=args.LATR[0]
+    levcont=args.LEVCONT[0]
+    levint=args.LEVINT[0]
  
     clean()
 
@@ -113,10 +121,15 @@ def main():
         
     ax = plt.subplot(projection=ccrs.SouthPolarStereo(central_longitude=300))
 
-
-
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
     lons, lats = np.meshgrid(np.append(lon,360),lat)
+    clevs = np.arange(int(levcont),int(levcont)+int(levint),int(levint))
+
+
+
+
+
+
     if (level=='500mb'):
         clevs = np.arange(-135,165,30)      
     elif (level=='30mb'):

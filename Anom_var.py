@@ -2,7 +2,7 @@
 #to compute the anomaly of the variable/level specified
 #for that given period. NCEP/NCAR Reanalysis (Kalnay etal 1996)are used 
 
-# As an example to run by shell: python Anom_var.py --dateinit "2018-02-01" --dateend "2018-02-28" --variable "Zg" --level "200mb" --latmin "-60" --latmax "-20" --lonmin "250" --lonmax "340" 
+# As an example to run by shell: python Anom_var.py --dateinit "2018-02-01" --dateend "2018-02-28" --variable "Zg" --level "200mb" --latmin "-60" --latmax "-20" --lonmin "250" --lonmax "340" --levcont "200" --levint "20"
 
 #libraries needed
 import urllib.request
@@ -72,9 +72,15 @@ def main():
     #Seventh argument: Minimum Longitude for the graph range
     parser.add_argument('--lonmin',dest='LONI', metavar='loni', type=str,
                         nargs=1,help='Minimum longitude')
-    #Eightht argument: Maximum Longitude for the graph range
+    #Eighth argument: Maximum Longitude for the graph range
     parser.add_argument('--lonmax',dest='LONF', metavar='lonf', type=str,
                         nargs=1,help='Maximum longitude')
+    #Ninth argument: Maximum level for contour
+    parser.add_argument('--levcont',dest='LEVCONT', metavar='levcont', type=str,
+                        nargs=1,help='Maximum level for contour')
+    #Tenth argument: Interval level for contour
+    parser.add_argument('--levint',dest='LEVINT', metavar='levint', type=str,
+                        nargs=1,help='Interval level for contour')
 
     # Extract dates from args
     args=parser.parse_args()
@@ -88,6 +94,8 @@ def main():
     latf=args.LATF[0]
     loni=args.LONI[0]
     lonf=args.LONF[0]
+    levcont=args.LEVCONT[0]
+    levint=args.LEVINT[0]
  
     clean()
 
@@ -122,11 +130,11 @@ def main():
 
     fig = plt.figure(figsize=(16, 11)) 
     
-    ax = plt.subplot(projection=ccrs.Robinson(central_longitude=180))
+    ax = plt.subplot(projection=ccrs.PlateCarree(central_longitude=180))
 
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
     lons, lats = np.meshgrid(lon,lat)
-    clevs = np.arange(-90,110,20)
+    clevs = np.arange(int(levcont),int(levcont)+int(levint),int(levint))
     crs_latlon = ccrs.PlateCarree()
     ax.set_extent([int(loni),int(lonf), int(lati), int(latf)], crs=crs_latlon)
     im=ax.contourf(lons, lats, np.squeeze(anomvar),clevs,transform=crs_latlon,cmap='RdBu_r',extend='both')
