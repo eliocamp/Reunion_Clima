@@ -239,7 +239,7 @@ def main():
     ax.set_title('Anomalías Función Corriente 0.2101 sigma '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure - tight option adjuts paper size to figure
-    fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
     
     
     #plot plumb fluxes and save again
@@ -252,7 +252,7 @@ def main():
     ax.set_title('Anomalías Función Corriente 0.2101 sigma y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure
-    fig1.savefig('psi_plumb_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    fig1.savefig('psi_plumb_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
     
 
 # In[] 
