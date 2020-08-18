@@ -19,7 +19,11 @@ import numpy as np
 import argparse 
 import datetime
 import matplotlib.pyplot as plt
-import mpl_toolkits.basemap as bm
+import cartopy.crs as ccrs	
+import numpy as np 
+import cartopy.feature 	
+from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
+#import mpl_toolkits.basemap as bm
 from numpy import ma  #mask smaller values       
 
 # In[]      
@@ -190,65 +194,56 @@ def main():
     #y-component
     py = coeff1/(a*a)*( uclm/np.transpose(np.tile(coslat,(nlons,1)))*termxv + vclm*termyv)
     
-    
+#========================================================================================    
     # In[12]:plot flux and psi anomalies
     # create figure, add axes
-    fig1 = plt.figure(figsize=(16,20),dpi=300)  #fig size in inches
+
+    fig1 = plt.figure(figsize=(16, 11)) 
     
-    ax = fig1.add_axes([0.1,0.1,0.8,0.8])
-    
-    mapproj = bm.Basemap(projection='cyl',
-                         llcrnrlat=-88.0, llcrnrlon=0.0,
-                         urcrnrlat=5, urcrnrlon=357.5)    #projection and map limits
-    
-    mapproj.drawcoastlines()          # coast
-    mapproj.drawparallels(np.array([-75, -60, -45, -30,-15, 0]), labels=[1,0,0,0])    #draw parallels
-    mapproj.drawmeridians(np.array([-180, -90, 0, 90, 180]), labels=[0,0,0,1])     #draw meridians
-    mapproj.drawcountries()
-    lonall, latall = np.meshgrid(lon, lat)          #array of grid
-    lonproj, latproj = mapproj(lonall, latall)      #poject grid
-    
-    # set desired contour levels.
-    
+    ax = plt.subplot(projection=ccrs.PlateCarree(central_longitude=180))
+    crs_latlon = ccrs.PlateCarree()
+    #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
+    lons, lats = np.meshgrid(lon,lat)
     clevs = np.arange(-2.5e7,2.75e7,0.25e7)
-    
     barra = plt.cm.RdBu #colorbar
     
-    CS1 = mapproj.contourf(lonproj, latproj,psiaa[0,:,:],clevs,cmap=barra,extend='both') #extended generate pretty colorbar
+    ax.set_extent([0, 359, -88, 0], crs=crs_latlon)
+    im=ax.contourf(lons, lats, psiaa[0, :, :], clevs, transform=crs_latlon, cmap=barra, extend='both')
     
-    #color lower and upper colorbar triangles
     barra.set_under(barra(0))
     barra.set_over(barra(barra.N-1))
-    
     # add colorbar
-    cb = mapproj.colorbar(CS1,"right")
-    cb.set_label('$m^{2}/s$')
-    
+    cbar = plt.colorbar(im, fraction=0.052, pad=0.04,shrink=0.7,aspect=12)#,"right")
+    #legend
+    cbar.set_label('$m^{2}/s$')    
+
+    ax.add_feature(cartopy.feature.COASTLINE)
+    ax.add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.5)
+    ax.gridlines(crs=crs_latlon, linewidth=0.3, linestyle='-')
+    lon_formatter = LongitudeFormatter(zero_direction_label=True)
+    lat_formatter = LatitudeFormatter()
+    ax.xaxis.set_major_formatter(lon_formatter)
+    ax.yaxis.set_major_formatter(lat_formatter)
+   
     #contoour levels
-    mapproj.contour(lonproj, latproj,psiaa[0,:,:],clevs,colors = 'k',linewidths=0.5)
-    
-    #mask wind data to only show the 25% stronger fluxes.
-    Q75=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),75) 
-    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q75
-    
-    #mask array
-    px_mask = ma.array(px,mask = M)
-    py_mask = ma.array(py,mask = M)
-    
-    #print title
+    ax.contour(lons, lats, psiaa[0, :, :], clevs, colors='k', linewidths=0.5, transform=crs_latlon)
+       #print title
     ax.set_title('Anomalías Función Corriente 0.2101 sigma '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure - tight option adjuts paper size to figure
     fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
     
-    
     #plot plumb fluxes and save again
-    
+    #mask wind data to only show the 50% stronger fluxes.
+    Q50=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),50) 
+    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q50 
+    #mask array
+    px_mask = ma.array(px,mask = M)
+    py_mask = ma.array(py,mask = M)
     #plot vectors
-    mapproj.quiver(lonproj[2:-1:2,2:-1:2],latproj[2:-1:2,2:-1:2],px_mask[0,2:-1:2,2:-1:2],py_mask[0,2:-1:2,2:-1:2],width=1e-3,
-                       headwidth=3,#headwidht (default3)
-                       headlength=2.2)  # (default5)
-    
+    ax.quiver(lons[2:-1:2,2:-1:2], lats[2:-1:2,2:-1:2], px_mask[0,2:-1:2,2:-1:2],
+              py_mask[0,2:-1:2,2:-1:2], width=1e-3, headwidth=3,#headwidht (default3)
+                       headlength=2.2)  # (default5))	      
     ax.set_title('Anomalías Función Corriente 0.2101 sigma y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure
