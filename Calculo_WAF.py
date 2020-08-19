@@ -235,15 +235,15 @@ def main():
     
     #plot plumb fluxes and save again
     #mask wind data to only show the 50% stronger fluxes.
-    Q50=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),50) 
-    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q50 
+    Q75=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),75) 
+    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q75 
     #mask array
     px_mask = ma.array(px,mask = M)
     py_mask = ma.array(py,mask = M)
     #plot vectors
     ax.quiver(lons[2:-1:2,2:-1:2], lats[2:-1:2,2:-1:2], px_mask[0,2:-1:2,2:-1:2],
               py_mask[0,2:-1:2,2:-1:2], width=1e-3, headwidth=3,#headwidht (default3)
-                       headlength=2.2)  # (default5))	      
+                       headlength=2.2, transform=crs_latlon)  # (default5))	      
     ax.set_title('Anomalías Función Corriente 0.2101 sigma y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure
