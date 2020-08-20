@@ -207,19 +207,22 @@ def main():
     clevs = np.arange(-2.5e7,2.75e7,0.25e7)
     barra = plt.cm.RdBu #colorbar
     
-    ax.set_extent([0, 359, -88, 0], crs=crs_latlon)
+    ax.set_extent([0, 359, -88, 10], crs=crs_latlon)
     im=ax.contourf(lons, lats, psiaa[0, :, :], clevs, transform=crs_latlon, cmap=barra, extend='both')
     
     barra.set_under(barra(0))
     barra.set_over(barra(barra.N-1))
     # add colorbar
-    cbar = plt.colorbar(im, fraction=0.052, pad=0.04,shrink=0.7,aspect=12)#,"right")
+    #cbar = plt.colorbar(im, fraction=0.052, pad=0.04,shrink=0.7,aspect=12)#,"right")
+    cbar = plt.colorbar(im, fraction=0.052, pad=0.04,shrink=0.3,aspect=12)#,"right")
     #legend
     cbar.set_label('$m^{2}/s$')    
 
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.5)
     ax.gridlines(crs=crs_latlon, linewidth=0.3, linestyle='-')
+    ax.set_xticks(np.linspace(0, 360,  7), crs=crs_latlon)
+    ax.set_yticks(np.linspace(-80, 10,  10), crs=crs_latlon)      
     lon_formatter = LongitudeFormatter(zero_direction_label=True)
     lat_formatter = LatitudeFormatter()
     ax.xaxis.set_major_formatter(lon_formatter)
@@ -234,9 +237,9 @@ def main():
     fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
     
     #plot plumb fluxes and save again
-    #mask wind data to only show the 50% stronger fluxes.
-    Q75=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),75) 
-    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q75 
+    #mask wind data to only show the 35% stronger fluxes.
+    Q65=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),65) 
+    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q65
     #mask array
     px_mask = ma.array(px,mask = M)
     py_mask = ma.array(py,mask = M)
