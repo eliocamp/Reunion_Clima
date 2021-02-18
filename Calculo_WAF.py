@@ -23,7 +23,7 @@ import cartopy.crs as ccrs
 import numpy as np 
 import cartopy.feature 	
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
-#import mpl_toolkits.basemap as bm
+import copy
 from numpy import ma  #mask smaller values       
 
 # In[]      
@@ -205,13 +205,13 @@ def main():
     #Pasamos las latitudes/longitudes del dataset a una reticula para graficar
     lons, lats = np.meshgrid(lon,lat)
     clevs = np.arange(-2.5e7,2.75e7,0.25e7)
-    barra = plt.cm.RdBu #colorbar
+    cmap = copy.copy(plt.cm.get_cmap("RdBu")) 
     
     ax.set_extent([0, 359, -88, 10], crs=crs_latlon)
-    im=ax.contourf(lons, lats, psiaa[0, :, :], clevs, transform=crs_latlon, cmap=barra, extend='both')
+    im=ax.contourf(lons, lats, psiaa[0, :, :], clevs, transform=crs_latlon, cmap=cmap, extend='both')
     
-    barra.set_under(barra(0))
-    barra.set_over(barra(barra.N-1))
+    cmap.set_under(cmap(0))
+    cmap.set_over(cmap(cmap.N-1))
     # add colorbar
     #cbar = plt.colorbar(im, fraction=0.052, pad=0.04,shrink=0.7,aspect=12)#,"right")
     cbar = plt.colorbar(im, fraction=0.052, pad=0.04,shrink=0.3,aspect=12)#,"right")
@@ -234,7 +234,7 @@ def main():
     ax.set_title('Anomalías Función Corriente 0.2101 sigma '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure - tight option adjuts paper size to figure
-    fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape')
     
     #plot plumb fluxes and save again
     #mask wind data to only show the 40% stronger fluxes.
@@ -250,7 +250,7 @@ def main():
     ax.set_title('Anomalías Función Corriente 0.2101 sigma y Flujos de Plumb '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     
     #save figure
-    fig1.savefig('psi_plumb_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    fig1.savefig('psi_plumb_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape')
     
 
 # In[] 
