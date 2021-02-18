@@ -237,9 +237,9 @@ def main():
     fig1.savefig('psi_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'-'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'.png',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
     
     #plot plumb fluxes and save again
-    #mask wind data to only show the 35% stronger fluxes.
-    Q65=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),65) 
-    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q65
+    #mask wind data to only show the 40% stronger fluxes.
+    Q60=np.percentile(np.sqrt(np.add(np.power(px,2),np.power(py,2))),60) 
+    M = np.sqrt(np.add(np.power(px,2),np.power(py,2))) < Q60
     #mask array
     px_mask = ma.array(px,mask = M)
     py_mask = ma.array(py,mask = M)
