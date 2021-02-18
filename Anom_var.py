@@ -139,10 +139,13 @@ def main():
     ax.set_extent([int(loni),int(lonf), int(lati), int(latf)], crs=crs_latlon)
     im=ax.contourf(lons, lats, np.squeeze(anomvar),clevs,transform=crs_latlon,cmap='RdBu_r',extend='both')
     ax.contour(lons, lats, np.squeeze(anomvar),clevs,colors='k',transform=crs_latlon)
-    plt.colorbar(im,fraction=0.052, pad=0.04,shrink=0.8,aspect=12)
+    #plt.colorbar(im,fraction=0.02, pad=0.04,shrink=0.8,aspect=12)
+    cbar = plt.colorbar(im, fraction=0.052, pad=0.04,shrink=0.3,aspect=12)#,"right")
     ax.add_feature(cartopy.feature.COASTLINE)
     ax.add_feature(cartopy.feature.BORDERS, linestyle='-', alpha=.5)
     ax.gridlines(crs=crs_latlon, linewidth=0.3, linestyle='-')
+    ax.set_xticks(np.linspace(0, 360,  7), crs=crs_latlon)
+    ax.set_yticks(np.linspace(-80, 10,  10), crs=crs_latlon)    
     lon_formatter = LongitudeFormatter(zero_direction_label=True)
     lat_formatter = LatitudeFormatter()
     ax.xaxis.set_major_formatter(lon_formatter)
@@ -150,7 +153,7 @@ def main():
     ax.set_title('Anomalías '+var+' '+level+' '+str(inid)+'/'+str(inim)+'/'+str(iniy)+'-'+str(find)+'/'+str(finm)+'/'+str(finy))
     #Save in jpg
 
-    plt.savefig('Anom'+var+'_'+level+'_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'_'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'_'+str(lati)+'_'+str(latf)+'_'+str(loni)+'_'+str(lonf)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape',papertype='A4')
+    plt.savefig('Anom'+var+'_'+level+'_'+'{:02d}'.format(inid)+'{:02d}'.format(inim)+str(iniy)+'_'+'{:02d}'.format(find)+'{:02d}'.format(finm)+str(finy)+'_'+str(lati)+'_'+str(latf)+'_'+str(loni)+'_'+str(lonf)+'.jpg',dpi=300,bbox_inches='tight',orientation='landscape')
 
 #begin        
 if __name__ == "__main__":
