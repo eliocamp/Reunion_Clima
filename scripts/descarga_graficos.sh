@@ -25,6 +25,29 @@ dfm3=$(cal $(date -d "$date -1 month" +"%m %Y") | awk 'NF {DAYS = $NF}; END {pri
 #current month
 cumes=$(date -d "$date" +"%m")
 
+# De https://stackoverflow.com/questions/36757864/how-to-get-the-latest-date-for-a-specific-day-of-the-week-in-bash
+# requires bash 4.x and GNU date
+last_kday() {
+  local kday=$1
+  local -A numbers=([sunday]=0   [monday]=1 [tuesday]=2 [wednesday]=3
+                    [thursday]=4 [friday]=5 [saturday]=6)
+  if [[ $kday == *day ]]; then
+    kday=${numbers[${kday,,}]}
+  elif [[ $kday != [0-6] ]]; then
+    echo >&2 "Usage: last_kday weekday"
+    return 1
+  fi
+
+  local today=$(date +%w)
+  local days_ago=$(( today - kday ))
+  if (( days_ago < 0 )); then let days_ago+=7; fi
+  date -d "$days_ago days ago" +%d
+}
+
+# Prono IOD 
+martes=$(last_kday tuesday)
+
+
 #Imagen SOI (fija)
 wget -O SOI.gif http://www.cpc.ncep.noaa.gov/products/CDB/Tropics/figt1.gif
 
@@ -196,10 +219,10 @@ wget -O PronoENSO.png https://iri.columbia.edu/wp-content/uploads/$anio/$cumes/f
 wget -O Pluma_PronoENSO_MesActual.png https://iri.columbia.edu/wp-content/uploads/$anio3/$cumes/figure4.png
 wget -O Pluma_PronoENSO_MesAnterior.png https://iri.columbia.edu/wp-content/uploads/$anio3/$mes3/figure4.png
 
-#Imagen Prono IOD (¡¡¡Cambiar día--- algun martes del mes!!!)
-wget --no-cache -O PronoIOD.png http://www.bom.gov.au/climate/enso/wrap-up/archive/${anio}${cumes}09.sstOutlooks_iod.png
-wget --no-cache -O PronoIOD_NextMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}09.iod_summary_2.png
-wget --no-cache -O PronoIOD_NextOtMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}09.iod_summary_3.png
+#Imagen Prono IOD (fija)
+wget --no-cache -U "Mozilla" -O PronoIOD.png http://www.bom.gov.au/climate/enso/wrap-up/archive/${anio}${cumes}${martes}.sstOutlooks_iod.png
+wget --no-cache -O -U "Mozilla" PronoIOD_NextMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}${martes}.iod_summary_2.png
+wget --no-cache -O -U "Mozilla" PronoIOD_NextOtMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}${martes}.iod_summary_3.png
 
 #Imagen Prono Precip NMME (¡¡¡Cambiar!!!)
 wget -O Prono_Precip_NMME.png http://www.cpc.ncep.noaa.gov/products/international/nmme/probabilistic_seasonal/samerica_nmme_prec_3catprb_NovIC_Dec2021-Feb2022.png
