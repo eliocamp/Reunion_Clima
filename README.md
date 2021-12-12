@@ -2,6 +2,18 @@
 
 Scritps para preparar la presentación de la reunión del clima (SMN + CIMA).
 
+## Dependencias
+
+- ImageMagick   
+  `sudo apt install imagemagick`
+  
+- pdfcrop
+  `sudo apt texlive-extra-utils`
+
+- python
+
+- dependencias de python 
+  `pip install -r requirements.txt`
 
 ## Instrucciones
 
