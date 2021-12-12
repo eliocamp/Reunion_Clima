@@ -194,7 +194,7 @@ wget -O PronoENSO.png https://iri.columbia.edu/wp-content/uploads/$anio/$cumes/f
 
 #Imagen Pluma ENSO (Mes actual puede no estar según en qué fecha se haga la presentación)
 wget -O Pluma_PronoENSO_MesActual.png https://iri.columbia.edu/wp-content/uploads/$anio3/$cumes/figure4.png
-wget -O Pluma_PronoENSO_MesAnterior.png https://iri.columbia.edu/wp-content/uploads/$anio3/$mes3/figure1-1.png
+wget -O Pluma_PronoENSO_MesAnterior.png https://iri.columbia.edu/wp-content/uploads/$anio3/$mes3/figure4.png
 
 #Imagen Prono IOD (¡¡¡Cambiar día--- algun martes del mes!!!)
 wget --no-cache -O PronoIOD.png http://www.bom.gov.au/climate/enso/wrap-up/archive/${anio}${cumes}09.sstOutlooks_iod.png
