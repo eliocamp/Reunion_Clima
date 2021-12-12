@@ -77,14 +77,12 @@ wget -O uv850.gif https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ens
 
 #Imagen OLR y Anomalía OLR mensual (fija)
 wget -O OLR_M1.gif http://www.cpc.ncep.noaa.gov/products/CDB/CDB_Archive_html/bulletin_$mes1$anio1/Tropics/figt25.gif
-#mv figt25.gif OLR_M1.gif
 wget -O OLR_M2.gif http://www.cpc.ncep.noaa.gov/products/CDB/CDB_Archive_html/bulletin_$mes2$anio2/Tropics/figt25.gif
-#mv figt25.gif OLR_M2.gif
 wget -O OLR_M3.gif http://www.cpc.ncep.noaa.gov/products/CDB/CDB_Archive_html/bulletin_$mes3$anio3/Tropics/figt25.gif
-#mv figt25.gif OLR_M3.gif
+
 
 #Imagen IOD (fija) NO ESTÁ FUNCIONANDO BIEN
-wget --no-cache -O IOD.png http://www.bom.gov.au/climate/enso/monitoring/iod1.png
+wget --no-cache -U "Mozilla" -O IOD.png http://www.bom.gov.au/climate/enso/monitoring/iod1.png
 
 #Flujos de Plumb  (fija)
 python $enlace"Calculo_WAF.py" --dateinit "$anio1-$mes1-01" --dateend "$anio3-$mes3-$dfm3"
