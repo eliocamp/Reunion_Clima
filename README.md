@@ -8,8 +8,10 @@ Scritps para preparar la presentación de la reunión del clima (SMN + CIMA).
   `sudo apt install imagemagick`
   
 - pdfcrop
-  `sudo apt texlive-extra-utils`
+  `sudo apt install texlive-extra-utils`
 
+- qpdf
+  `sudo apt install qpdf`
 - python
 
 - dependencias de python 
