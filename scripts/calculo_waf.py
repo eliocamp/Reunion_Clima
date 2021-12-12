@@ -24,11 +24,11 @@ import numpy as np
 import cartopy.feature 	
 from cartopy.mpl.ticker import LongitudeFormatter, LatitudeFormatter
 import copy
+import os
 from numpy import ma  #mask smaller values       
 
 # In[]      
 def clean():   #clean enviroment
-    import os
     os.system("rm -f /tmp/*.gz /tmp/*.nc")
 # In[]      Downloads netcdf from esrl    
 def descarga_nc( mesi, diai, mesf, diaf, aniof, variable_entrada, variable_salida, tipo):
@@ -52,6 +52,9 @@ def descarga_nc( mesi, diai, mesf, diaf, aniof, variable_entrada, variable_salid
         
         #get nc file save as netcdf
         ruta = "./tmp/"
+        if not os.path.exists(ruta):
+            os.mkdir(ruta)
+
         urllib.request.urlretrieve('http://www.psl.noaa.gov'+"".join(link), ruta+variable_salida+'.nc')
 # In[]      extract variable from netcdf
 def manipular_nc(archivo,variable):
