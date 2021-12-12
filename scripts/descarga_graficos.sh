@@ -29,7 +29,7 @@ cumes=$(date -d "$date" +"%m")
 wget -O SOI.gif http://www.cpc.ncep.noaa.gov/products/CDB/Tropics/figt1.gif
 
 #Imagen SOI zoom (fija)
-wget -O SOI_zoom.png http://www.bom.gov.au/climate/enso/monitoring/soi30.png
+wget -U "Mozzila" -O SOI_zoom.png http://www.bom.gov.au/climate/enso/monitoring/soi30.png
 
 #Regiones SOI (fija)
 wget -O SOI_regiones.png https://www.climate.gov/sites/default/files/styles/inline_all/public/Fig1_ENSOindices_SOI_610.png
