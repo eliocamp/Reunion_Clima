@@ -85,22 +85,22 @@ wget -O OLR_M3.gif http://www.cpc.ncep.noaa.gov/products/CDB/CDB_Archive_html/bu
 wget --no-cache -U "Mozilla" -O IOD.png http://www.bom.gov.au/climate/enso/monitoring/iod1.png
 
 #Flujos de Plumb  (fija)
-python $enlace"Calculo_WAF.py" --dateinit "$anio1-$mes1-01" --dateend "$anio3-$mes3-$dfm3"
+python $enlace"calculo_waf.py" --dateinit "$anio1-$mes1-01" --dateend "$anio3-$mes3-$dfm3"
 mv psi_plumb_01$mes1$anio1-${dfm3}$mes3$anio3.png Plumb_Trim.png
 
-python $enlace"Calculo_WAF.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1"
+python $enlace"calculo_waf.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1"
 mv psi_plumb_01$mes1$anio1-${dfm1}$mes1$anio1.png Plumb_M1.png
 
-python $enlace"Calculo_WAF.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2"
+python $enlace"calculo_waf.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2"
 mv psi_plumb_01$mes2$anio2-${dfm2}$mes2$anio2.png Plumb_M2.png
 
-python $enlace"Calculo_WAF.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3"
+python $enlace"calculo_waf.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3"
 mv psi_plumb_01$mes3$anio3-${dfm3}$mes3$anio3.png Plumb_M3.png
 
 #Imagen Anomalía Z500 yZ30 trimestral (fija)
-python $enlace"Anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30" 
+python $enlace"anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30" 
 mv Anomhgt_500mb_01${mes1}${anio1}_${dfm3}${mes3}${anio3}_-20.jpg zg500_Trim.jpg
-python $enlace"Anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "30mb" --latr "-20" --levcont "300" --levint "50"  
+python $enlace"anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "30mb" --latr "-20" --levcont "300" --levint "50"  
 mv Anomhgt_30mb_01${mes1}${anio1}_${dfm3}${mes3}${anio3}_-20.jpg zg30_Trim.jpg
 
 #Persistencia Anomalías geopotencial (fija)
@@ -116,49 +116,47 @@ wget -O Precip_SMN_M3.gif https://estaticos.smn.gob.ar/hidro/imagenes/allu1m.gif
 wget -O Temp_SMN_M3.gif https://estaticos.smn.gob.ar/clima/imagenes/atmed1.gif 
 
 #Imagen Anomalía Z500 mensual (fija)
-python $enlace"Anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30"  
+python $enlace"anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30"  
 mv Anomhgt_500mb_01${mes1}${anio1}_${dfm1}${mes1}${anio1}_-20.jpg zg500_M1.jpg
 
-python $enlace"Anom_var_stereo.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30" 
+python $enlace"anom_var_stereo.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30" 
 mv Anomhgt_500mb_01${mes2}${anio2}_${dfm2}${mes2}${anio2}_-20.jpg zg500_M2.jpg 
 
-python $enlace"Anom_var_stereo.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30"  
+python $enlace"anom_var_stereo.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "500mb" --latr "-20" --levcont "120" --levint "30"  
 mv Anomhgt_500mb_01${mes3}${anio3}_${dfm3}${mes3}${anio3}_-20.jpg zg500_M3.jpg
 
 #Imagen Anomalía Z30 mensual (fija)
-python $enlace"Anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1" --variable "Zg" --level "30mb" --latr "-20" --levcont "600" --levint "50"   
+python $enlace"anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1" --variable "Zg" --level "30mb" --latr "-20" --levcont "600" --levint "50"   
 mv Anomhgt_30mb_01${mes1}${anio1}_${dfm1}${mes1}${anio1}_-20.jpg zg30_M1.jpg
 
-python $enlace"Anom_var_stereo.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2" --variable "Zg" --level "30mb" --latr "-20" --levcont "600" --levint "50"  
+python $enlace"anom_var_stereo.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2" --variable "Zg" --level "30mb" --latr "-20" --levcont "600" --levint "50"  
 mv Anomhgt_30mb_01${mes2}${anio2}_${dfm2}${mes2}${anio2}_-20.jpg zg30_M2.jpg 
 
-python $enlace"Anom_var_stereo.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "30mb" --latr "-20" --levcont "600" --levint "50"   
+python $enlace"anom_var_stereo.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "30mb" --latr "-20" --levcont "600" --levint "50"   
 mv Anomhgt_30mb_01${mes3}${anio3}_${dfm3}${mes3}${anio3}_-20.jpg zg30_M3.jpg
 
 #Imagen Anomalía T30 mensual (fija)
-python $enlace"Anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1" --variable "T" --level "30mb" --latr "-20" --levcont "25" --levint "2"   
+python $enlace"anom_var_stereo.py" --dateinit "$anio1-$mes1-01" --dateend "$anio1-$mes1-$dfm1" --variable "T" --level "30mb" --latr "-20" --levcont "25" --levint "2"   
 mv Anomair_30mb_01${mes1}${anio1}_${dfm1}${mes1}${anio1}_-20.jpg T30_M1.jpg
 
-python $enlace"Anom_var_stereo.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2" --variable "T" --level "30mb" --latr "-20" --levcont "25" --levint "2"  
+python $enlace"anom_var_stereo.py" --dateinit "$anio2-$mes2-01" --dateend "$anio2-$mes2-$dfm2" --variable "T" --level "30mb" --latr "-20" --levcont "25" --levint "2"  
 mv Anomair_30mb_01${mes2}${anio2}_${dfm2}${mes2}${anio2}_-20.jpg T30_M2.jpg 
 
-python $enlace"Anom_var_stereo.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "T" --level "30mb" --latr "-20" --levcont "25" --levint "2"   
+python $enlace"anom_var_stereo.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "T" --level "30mb" --latr "-20" --levcont "25" --levint "2"   
 mv Anomair_30mb_01${mes3}${anio3}_${dfm3}${mes3}${anio3}_-20.jpg T30_M3.jpg
 
 #anomalia mensual Temp smn (fija)
 wget -O Temp_SMN_M3.gif https://estaticos.smn.gob.ar/clima/imagenes/atmed1.gif
 
 #anomalia geop 1000 hPa (fija)
-python $enlace"Anom_var.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "1000mb" --latmin "-80" --latmax "0" --lonmin "0" --lonmax "359" --levcont "90" --levint "20" 
+python $enlace"anom_var.py" --dateinit "$anio3-$mes3-01" --dateend "$anio3-$mes3-$dfm3" --variable "Zg" --level "1000mb" --latmin "-80" --latmax "0" --lonmin "0" --lonmax "359" --levcont "90" --levint "20" 
 mv Anomhgt_1000mb_01${mes3}${anio3}_${dfm3}${mes3}${anio3}_-80_0_0_359.jpg zg1000_M3.jpg 
 
 #anomalia trimestral smn (fija)
 wget -O Precip_SMN_Trim.gif https://estaticos.smn.gob.ar/hidro/imagenes/allu3m.gif
-#mv allu3m.gif Precip_SMN_Trim.gif
 
 #anomalia trimestral smn (fija)
 wget -O Temp_SMN_Trim.gif https://estaticos.smn.gob.ar/clima/imagenes/atmed3.gif
-#mv atmed3.gif Temp_SMN_Trim.gif
 
 #anomalia mensual SSA (fija)
 wget --no-check-certificate -O Temp_SSA_M3.gif https://www.crc-sas.org/es/clima/imagenes/Ratmed1.gif
