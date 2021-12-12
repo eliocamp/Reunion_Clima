@@ -221,8 +221,8 @@ wget -O Pluma_PronoENSO_MesAnterior.png https://iri.columbia.edu/wp-content/uplo
 
 #Imagen Prono IOD (fija)
 wget --no-cache -U "Mozilla" -O PronoIOD.png http://www.bom.gov.au/climate/enso/wrap-up/archive/${anio}${cumes}${martes}.sstOutlooks_iod.png
-wget --no-cache -O -U "Mozilla" PronoIOD_NextMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}${martes}.iod_summary_2.png
-wget --no-cache -O -U "Mozilla" PronoIOD_NextOtMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}${martes}.iod_summary_3.png
+wget --no-cache -U "Mozilla" -O PronoIOD_NextMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}${martes}.iod_summary_2.png
+wget --no-cache -U "Mozilla" -O PronoIOD_NextOtMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}${martes}.iod_summary_3.png
 
 #Imagen Prono Precip NMME (¡¡¡Cambiar!!!)
 wget -O Prono_Precip_NMME.png http://www.cpc.ncep.noaa.gov/products/international/nmme/probabilistic_seasonal/samerica_nmme_prec_3catprb_NovIC_Dec2021-Feb2022.png
