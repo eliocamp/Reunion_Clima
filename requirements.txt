@@ -1,5 +1,6 @@
 beautifulsoup4==4.10.0
-Cartopy==0.0.0
-matplotlib==2.1.1
+numpy==1.18.0
+matplotlib==3.1.0
+Cartopy==0.20.0
 netCDF4==1.5.8
-numpy==1.13.3
+argparse==1.4.0
