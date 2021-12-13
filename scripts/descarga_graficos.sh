@@ -248,6 +248,13 @@ wget --no-cache -O Prono_Temp_copernicus.png https://stream.ecmwf.int/data/gorax
 #prono copernicus (Cambiar)
 wget --no-cache -O Prono_Precip_copernicus.png https://stream.ecmwf.int/data/gorax-blue-009/data/scratch/20210919-1940/63/convert_image-gorax-blue-009-6fe5cac1a363ec1525f54343b6cc9fd8-jLxoc4.png 
 
+
+# Flechita de ENSO
+# Sale de http://www.bom.gov.au/climate/enso/outlook/
+cutycapt --url=http://www.bom.gov.au/climate/enso/outlook/ --out=enso_flechita.png --min-width=1200
+convert enso_flechita.png -crop 240x159+323+316 enso_flechita.png
+
 rm tmp.pdf enso_evolution-status-fcsts-web.pdf
+
 
 
