@@ -12,6 +12,10 @@ Scritps para preparar la presentación de la reunión del clima (SMN + CIMA).
 
 - qpdf
   `sudo apt install qpdf`
+
+- libgeos y libproj   
+  `sudo apt -y install libproj-dev libgeos-dev`
+
 - python
 
 - dependencias de python 
