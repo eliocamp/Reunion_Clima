@@ -7,7 +7,7 @@ rm ./*.png
 
 # Ruta a los scrips para correr en python
 # Hay que correr esto desde la carpeta raiz del repositorio, 
-enlace=./scripts/
+enlace=./
 
 anio=$(date -d "$date" +"%Y")
 mes1=$(date -d "$date -3 month" +"%m")
@@ -46,7 +46,6 @@ last_kday() {
 
 # Prono IOD 
 martes=$(last_kday tuesday)
-
 
 #Imagen SOI (fija)
 wget -O SOI.gif http://www.cpc.ncep.noaa.gov/products/CDB/Tropics/figt1.gif
@@ -216,7 +215,7 @@ wget -O PronoENSO_Anterior.png https://iri.columbia.edu/wp-content/uploads/$anio
 wget -O PronoENSO.png https://iri.columbia.edu/wp-content/uploads/$anio/$cumes/figure1.png
 
 #Imagen Pluma ENSO (Mes actual puede no estar según en qué fecha se haga la presentación)
-wget -O Pluma_PronoENSO_MesActual.png https://iri.columbia.edu/wp-content/uploads/$anio3/$cumes/figure4.png
+wget -O Pluma_PronoENSO_MesActual.png https://iri.columbia.edu/wp-content/uploads/$anio/$cumes/image.png
 wget -O Pluma_PronoENSO_MesAnterior.png https://iri.columbia.edu/wp-content/uploads/$anio3/$mes3/figure4.png
 
 #Imagen Prono IOD (fija)
@@ -225,22 +224,22 @@ wget --no-cache -U "Mozilla" -O PronoIOD_NextMon.png http://www.bom.gov.au/clima
 wget --no-cache -U "Mozilla" -O PronoIOD_NextOtMon.png http://www.bom.gov.au/climate/model-summary/archive/${anio}${cumes}${martes}.iod_summary_3.png
 
 #Imagen Prono Precip NMME (¡¡¡Cambiar!!!)
-wget -O Prono_Precip_NMME.png http://www.cpc.ncep.noaa.gov/products/international/nmme/probabilistic_seasonal/samerica_nmme_prec_3catprb_NovIC_Dec2021-Feb2022.png
+wget -O Prono_Precip_NMME.png http://www.cpc.ncep.noaa.gov/products/international/nmme/probabilistic_seasonal/samerica_nmme_prec_3catprb_MarIC_Apr2022-Jun2022.png
 
 #Imagen Prono Temp NMME (¡¡¡Cambiar!!!)
-wget -O Prono_Temp_NMME.png http://www.cpc.ncep.noaa.gov/products/international/nmme/probabilistic_seasonal/samerica_nmme_tmp2m_3catprb_NovIC_Dec2021-Feb2022.png
+wget -O Prono_Temp_NMME.png http://www.cpc.ncep.noaa.gov/products/international/nmme/probabilistic_seasonal/samerica_nmme_tmp2m_3catprb_MarIC_Apr2022-Jun2022.png
 
 #Imagen Prono Precip IRI (¡¡¡Cambiar!!!)
-wget -O Prono_Precip_IRI.gif https://iri.columbia.edu/climate/forecast/net_asmt_nmme/$anio/nov${anio}/images/DJF22_SAm_pcp.gif
+wget -O Prono_Precip_IRI.gif https://iri.columbia.edu/climate/forecast/net_asmt_nmme/$anio/mar${anio}/images/AMJ22_SAm_pcp.gif
  
 #Imagen Prono Temp IRI (¡¡¡Cambiar!!!)
-wget -O Prono_Temp_IRI.gif https://iri.columbia.edu/climate/forecast/net_asmt_nmme/$anio/nov${anio}/images/DJF22_SAm_tmp.gif
+wget -O Prono_Temp_IRI.gif https://iri.columbia.edu/climate/forecast/net_asmt_nmme/$anio/mar${anio}/images/AMJ22_SAm_tmp.gif
 
 #Imagen Prono DIVAR (¡¡¡Cambiar!!!)
-wget -O Prono_Precip_DIVAR.png http://climar.cima.fcen.uba.ar/grafEstacional/for_prec_DJF_ic_Nov_${anio}_wsereg_mean_cor.png
+wget -O Prono_Precip_DIVAR.png http://climar.cima.fcen.uba.ar/grafEstacional/for_prec_AMJ_ic_Mar_${anio}_wsereg_mean_cor.png
  
 #Imagen Prono DIVAR (¡¡¡Cambiar!!!)
-wget -O Prono_Temp_DIVAR.png http://climar.cima.fcen.uba.ar/grafEstacional/for_tref_DJF_ic_Nov_${anio}_wsereg_mean_cor.png
+wget -O Prono_Temp_DIVAR.png http://climar.cima.fcen.uba.ar/grafEstacional/for_tref_AMJ_ic_Mar_${anio}_wsereg_mean_cor.png
 
 #prono copernicus (Cambiar)
 wget --no-cache -O Prono_Temp_copernicus.png https://stream.ecmwf.int/data/gorax-blue-009/data/scratch/20210920-0800/d4/convert_image-gorax-blue-009-6fe5cac1a363ec1525f54343b6cc9fd8-bYugvF.png
@@ -248,11 +247,15 @@ wget --no-cache -O Prono_Temp_copernicus.png https://stream.ecmwf.int/data/gorax
 #prono copernicus (Cambiar)
 wget --no-cache -O Prono_Precip_copernicus.png https://stream.ecmwf.int/data/gorax-blue-009/data/scratch/20210919-1940/63/convert_image-gorax-blue-009-6fe5cac1a363ec1525f54343b6cc9fd8-jLxoc4.png 
 
-
 # Flechita de ENSO
 # Sale de http://www.bom.gov.au/climate/enso/outlook/
 cutycapt --url=http://www.bom.gov.au/climate/enso/outlook/ --out=enso_flechita.png --min-width=1200
 convert enso_flechita.png -crop 240x159+323+316 enso_flechita.png
+
+#Status ENSO de CPC
+# Sale de https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc_Sp.shtml
+cutycapt --url=https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc_Sp.shtml --out=ENSOstatusCPC.png --min-width=1200
+convert ENSOstatusCPC.png -crop 580x260+380+150 ENSOstatusCPC.png
 
 rm tmp.pdf enso_evolution-status-fcsts-web.pdf
 
